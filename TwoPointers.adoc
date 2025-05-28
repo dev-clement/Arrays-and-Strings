@@ -1,0 +1,197 @@
+# Two pointers
+:toc:
+:sectnums:
+
+## Introduction
+
+Two pointers is an extremely common technique used to solve array and string problems. It involves having two element that both move along the iterable element (such as array, string or list). This article is about arrays and strings but it can really be applied to any element that is iterable.
+
+### Implementation
+
+There are severals ways to implement the two pointers. To start, let's look at the following method:
+
+_Start the pointers at the edges of the input (array, string) then move them forward each other until they meet theirselves._
+
+#### Converting this idea into instruction
+
+. Start one pointer at the first index `0` and the other pointer at the last index: `input.length - 1`
+
+. Use a while loop until the pointers are equals to each others.
+
+. At each iteration of the loop, move the pointer towards each other. This means either increment the pointer that started at the first index. Then decrement the pointer that started at the last index. Or if you want you can decide to move only one pointer, depending on your use case.
+
+#### Pseudo code illustrating the concept
+
+```
+function fn(arr) {
+    left = 0
+    right = arr.length - 1;
+    
+    while (left < right) {
+        // Do some logic here depending on the problem
+        // Do some logic to decide one of the following:
+        1. left++
+        2. right--
+        3. Both left++ and right--
+    }
+}
+```
+
+#### Complexity
+
+The strength of this technique is that we will never have more than O(n) iterations for the while loop because the pointer start _n_ away from each other and move at least one step close in every iteration.
+
+Therefore if we can keep the work inside each iteration at _O(n)_, this technique will result in a linear runtime, which is usually the best possible. Let's look at some examples.
+
+### Example: Array combination
+
+Given two sorted integers array `arr1` and `arr2`, return a new array that combines both of them and also sorted.
+
+The trivial approach would be to first combine both input arrays and then perform a sort. If we have `n = arr1.length + arr2.length`, then this gives a time complexity of _O(n log n)_ (the cost of sorting). This would be a good approach if the inputs arrays were not sorted, but because they are sorted, we can take advantage of the two pointers techniques to improve it to _O(n)_.
+
+We can build the answer array `ans` one element at a time. Start two pointers at the first index of each array, and compare their elements. At each iteration, we have 2 values. Whichever value is lower needs to come first in the answer, so add it to the answer and move the respective pointer.
+
+Once you finish to loop through both arrays, you should look if one of the 2 arrays are bigger than another, if that so, you should add the rest of the element to the answer array.
+
+#### Example:
+
+```java
+pulbic List<Integer> combine(int[] arr1, int[] arr2) {
+    // ans is the answer array
+    List<Integer> ans = new ArrayList<>();
+    int i = 0;
+    int j = 0;
+
+    while (i < arr1.length && j < arr2.legth) {
+        if (arr1[i] < arr2[j]) {
+            ans.add(arr1[i]);
+            ++i;
+        } else if (arr2[j] < arr1[i]) {
+            ans.add(arr2[j]);
+            ++j;
+        }
+    }
+    
+    while (i < arr1.length) {
+        ans.add(arr1[i]);
+        ++i;
+    }
+    
+    while (j < arr2.length) {
+        ans.add(arr2[j]);
+        ++j;
+    }
+}
+```
+Like in the previous examples, this algorithm has a time complexity of _O(n)_ time and use _O(1)_ space (if we don't count the output as extra space, which we usually don't...
+
+### Example: the Palindrome string
+
+After reversing a string, the first character becomes the last character. If a string is the same after being reversed, that means the first character is the same as the last character, and so on.
+
+We can use the two pointers techniques toward each other one position. We continue until the pointers meet each other or we find a mismatch.
+
+To run the algorithm, until pointers met each other, we can use a while loop. Each iteration in the while loop checks one pair. If the check is successful, we increment `left` and decrement `right` to move to the next pair. If the check isn't successful, we can return `false`.
+
+```java
+public boolean checkIfPalindrome(String s) {
+    int left = 0;
+    int right = s.length - 1;
+    
+    while (left < right) {
+        if (s.charAt(left) != s.charAt(right)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+```
+Notice that if the input was an array of characters instead of a string, the algorithm wouldn't change. The two pointers techniques word as long as the index variables are moving along some abstract iterable.
+
+This algorithm is very efficient as not only does it run in _O(n)_, but it also use only _O(1)_ space. No matter how big the input is, we always only use two integer variables (or pointers). The time complexity is _O(n)_ because the while loop will iterate with a cost of _O(1)_ each, and there can never be more than _O(n)_ iterations of the while loop. The pointers start at a distance of _n_ from each other and move closer by one step each iteration.
+
+###### Explanation
+
+We keep track of two indices / pointers, a left one and a right one. At the beginning, the left pointer points to the first character. If these characters are not equal to each other, we know the iterable cannot be a palindrome. Otherwise the string MAY be a palindrome; we need to check the next pair. To move on to the next pair, we move the left index by incrementing it to make it forward, and the right one by decrementing it to make it backward.
+
+Once that's done, we continue to check until either you put _left_ and _right_ pointer to the same element, or if two character are different.
+
+### Example: Sum of an array
+
+Given a *sorted* array of unique integers and a target integer, return `true` if there exists a pair of numbers that sum to target, `false` otherwise.
+
+For example, given `nums = [1, 2, 4, 6, 8, 9, 14, 15]` and `target = 13`, return true because `4 + 9 = 13`.
+
+#### The brute force solution
+
+The brute force solution would be to iterate over all pairs of integers. Each number in the array can be paired with another number, so this would result in a time complexity of _O(n²)_. Where _n_ is the length of the array. Because the array is sorted, we can use two pointers to improve an _O(n)_ time complexity.
+
+Let's use an example input. With two pointers, we start by looking at the first and the last number. Their sum (take a look at the example above) is `1 + 15 = 16`. Although, because `16 > target`, we need to make our current sum smaller. Therefore, we should move the `right` pointer. Now we have `1 + 14 = 15`. Again, move the right pointer because the sum is too large. Now `1 + 9 = 10`. Since the sum is too small, we need to make it bigger, which can be done by moving the _left_ pointer, `2 + 9 = 11 < target`. So move it again. Finally we found `4 + 9 = 13 = target`.
+
+The reason is the algorithm works: Because the numbers are sorted, moving the left pointer permanently increase the value the left pointer points to (`nums[left] = x`). Similarly, moving the right pointer permanently decrease the value, the right pointer points to `nums[right] = y`. If we have `x + y > target`, then we can never have a solution with `y` because `x` can only increase. So if a solution exists, we can only find it by decreasing `y`. The same logic can be applied to `x` if `x + y < target`.
+
+#### Solution
+
+```java
+public boolean checkForTarget(int[] nums, int target) {
+    int left = 0;
+    int right = nums.length - 1;
+    
+    while (left < right) {
+        int currentSum = nums[left] + nums[right];
+        if (currentSum == target) {
+            return true;
+        }
+        
+        if (currentSum > target) {
+            right--;
+        } else {
+            left++;
+        }
+    }
+    return false;
+}
+```
+
+### Another way to use two pointer
+
+This method where we start the pointer at the first and last indices and move them toward each other is only one way to implement two pointers. Algorithms are beautiful because of how abstract they are. "Two pointers" is just an idea, and it can be implemented in many different ways. Let's look at another method ans some new examples. The following method is applicable when the problem has two iterables in the input, for example, two arrays or two strings.
+
+_Move along both inputs simultaneously until all elements have been checked_
+
+#### Converting idea into instruction
+
+. Create two pointers. One for each iterable. Each iterable should start at the first index.
+
+. Use a while loop until one of the pointers reaches the end of its iterable.
+
+. At each iteration of the loop, move the pointer forward. This means incrementing either one of the pointers, or both of them. Deciding which pointers to move will depend on the problem we are trying to solve.
+
+. Because our while loop will stop when one of the pointers reaches the end, the other pointer will not be at the end of its respective iterable when the loop finishes. Sometimes, we need to iterate through all elements - if this is the case, you will need to write some extra code here to make sure both iterables are exhausted.
+
+#### Pseudo code illustrating the concept
+
+```
+function fn(arr1) {
+    i = 0
+    j = arr1.length - 1
+    while (i != j) 
+        Do some logic here depending on the problem
+        Do some more logic here to decide on one of the following:
+        i++
+        j--
+        Both
+    End of the loop, perhaps return
+}
+```
+
+This method will have a linear complexity of O(n) as there is only one loop and the stop codition is when i and j are at the same position.
+
+## Closing note
+
+Remember that the methods laid out here are just guidelines. For example, in the first method, we started the pointers at the first and last index, but sometimes you might find a problem that involves starting the pointers at difference indices. In the second method, we moved two pointers forward along two different inputs. Sometimes, there will only be one input array / string, but we still initialize both pointers at the first index and move both of them forward.
+
+Two pointers just refers to using two indexes variables to move along somer iterables. The strategies we looked at in this article are the most common patterns, but always be on the lookout for a different way of approach a problem. There are even problems that make use of "three pointers".
+
+_The chapters and articles in this course are ordered in a way that ideas learned in ealier chapters can be applied to later chapters. Two pointers certainly has a lot more applications than just what is in this article, don't worry, this won't be the last we'll be seeing on it.

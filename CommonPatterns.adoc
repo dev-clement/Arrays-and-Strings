@@ -1,0 +1,108 @@
+# Common pattern
+:toc:
+:sectnums:
+
+This document in about few mor patters and som common tricks that can be used in algorithm problems regardings string and arrays.
+
+## O(n) string building
+
+We mentioned earlier that in most languages, strings are immutable. This means concatenating a single character to a string is an _O(n)_ operation. If you have a string that is 1 million characters long, and you want to add one more character, all 1 million of characters need to be copied over to another string.
+
+### Time complexity related
+
+Many problems will ask you to return a string, and usually, this string will be built during the algorithm. Let's say the final string is of length `n` and we build it one character at a time with concatenation. What would the time complexity be ? The operation needed at each step would be `1 + 2 + 3 + ... + n`. This is the partial sum that leads to _O(n^2)_ operations.
+
+Simple concatenation will result in an _O(n^2)_ time complexity if you are using a language where strings are immutable.
+
+There are better ways to build strings in just _O(n)_ time. This will vary between languages, here let's talk about Python, and Java. 
+
+#### Python
+
+. Declare a list
+. When building the string, add the characters to the list. This ends up in a _O(1)_ per operation. Across `n` operations, it will cost _O(n)_ in total.
+. Once finished, convert the list to a string using `"".join(list)`. This is _O(n)_.
+. In total it costs us _O(n + m)_ = _O(2n)_ = _O(n)_
+
+```python
+def buildString(s):
+    arr = []
+    for c in s:
+        arr.append(c)
+    return "".join(arr)
+```
+
+##### JavaScript
+
+Same process as in `Python`, using the `arr.join` method:
+
+```javascript
+let buildString = s => {
+    let arr = []
+    for (let i = 0; i < s.length; ++i) {
+        arr.push(s[i])
+    }
+    return arr.join("")
+}
+```
+
+#### Java
+
+. Make use of the `StringBuilder` class
+. When building the string, add the characters to the list. This is an _O(1)_ per operation. Across `n` operations, it will finally costs _O(n)_ in total.
+. Once finished, convert the list to a string using `StringBuilder.toString()`. This is an _O(n)_
+. In total, it cost us _O(m + n)_ = _O(2n)_ = _O(n)_
+
+```java
+public string buildString(String s) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length; ++i) {
+        sb.append(s.charAt(i));
+    }
+    return sb.toString();
+}
+```
+
+##### C++
+
+In the C++ language, we just simply make use of the `+=` operator, which is fine when building a strings since a string is mutable.
+
+## Subarrays / Substrings, subsequences and subsets
+
+Let's quickly talk about the differences these words and what to look out for when encountering them in problems.
+
+### Subarrays / substrings
+
+_As a reminder, a subarray or substring is a contiguous section of an array or string._
+
+If a problem has explicit constraints such as:
+* Sum greater than or less than `k`
+* Limits what is contained, such as the maximum of `k` unique element or not duplicates allowed.
+
+And/or asks for:
+
+* Minimum or maximum length
+* Number of subarrays / substrings
+
+Think about a sliding window tehcnique. Note that not all problems with these characteristics should be solved with a sliding window, and not all sliding window problems have these characteristics. These characteristics should only be used as a general guideline.
+
+If a problem's input is an integer array and you find yourself needing to calculate multiple array sums, consider building a prefix sum.
+
+The size of a subarray between `i` and `j` (inclusive) is `j - i + 1`. This is also the number of subarrays that en at `j` starting form `i` or later.
+
+#### Subsequences
+
+_A subsequences is a set of elements of array/string that keeps the same relative order but doesn't need to be contiguous._
+
+_For example, subsequence of `[1, 2, 3, 4]` also include: [1, 3], [4], [], [2, 3] but not [3, 2], [5], [4, 1]._
+
+Typically, subsequence problem are more difficult. Because this is only the first chapter, it is difficult to talk about subsequence patterns now. Dinamic programming is used to solve a lot of subsequence problems.
+
+From the patterns we have learned so far, the most common one associated with subsequences is _two pointers_ when two inputs array/string are given. Because prefix sums and sliding windows represent subarrays/substrings, they are not applicable here.
+
+#### Subsets
+
+_A subset is any set of elements from the original array or string. The order doesn't really matter and the elements don't need to be beside each other. For example, given [1, 2, 3, 4], all of these are subsets: [3, 2], [4, 3, 2], [1]. Note, subsets that contain the same elements are usually considered the same, so [1, 2, 4] is the same subset as [1, 4, 2]._
+
+You may be thinking, what is the difference between subsequences and subsets if subsets with the same elements are considered the same ? In subsequences the order matters - let's say you had an array of integers and you needed to find a subsequence with 3 consecutive numbers (like `1, 2, 3`). This would be harder than finding a subset with 3 consecutive numbers because, with a subset, the 3 elements simply need to exist. In a subsequence, the elements need to exist in the correct relative order. For example, the array `[3, 2, 1]` has no subsequence that fits this criteria, but it has a subset that does.
+
+One thing to note is that if a problem involves subsequences, but the order of the subsequence doesn't actualy matter (let's say it wants the sum of subsequences), then you can treat it the same as a subset. A useful thing that you can do when dealing with subsets that you can't do with subsequences is that you can sort the input, since the order doesn't matter.
